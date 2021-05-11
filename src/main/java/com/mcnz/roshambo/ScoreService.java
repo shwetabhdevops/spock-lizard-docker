@@ -3,6 +3,7 @@ package com.mcnz.roshambo;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+//CrossOrigin
 @RestController
 public class ScoreService {
 	
