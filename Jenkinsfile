@@ -5,15 +5,22 @@ pipeline {
       parallel {
         stage('Log Tool Version') {
           steps {
-            bat '''mvn --version
-            git --version
-            java -version'''
+            sh 'mvn --version'
+            sh 'git --version'
+            sh 'java -version'
           }
         }
 
         stage('Check for POM') {
           steps {
-            fileExists 'pom.xml'
+           script {
+                    // Check if pom.xml file exists using standard shell command
+                    if (fileExists('pom.xml')) {
+                        echo "pom.xml exists."
+                    } else {
+                        echo "pom.xml does not exist."
+                    }
+                }
           }
         }
 
@@ -22,13 +29,13 @@ pipeline {
 
     stage('Build with Maven') {
       steps {
-        bat 'mvn compile'
+        sh 'mvn compile'
       }
     }
 
     stage('Run Tests') {
       steps {
-        bat 'mvn compile'
+        sh 'mvn compile'
       }
     }
 
@@ -48,19 +55,19 @@ pipeline {
 
     stage('Create Executable JAR File') {
       steps {
-        bat 'mvn package spring-boot:repackage'
+        sh 'mvn package spring-boot:repackage'
       }
     }  
 
     stage('Build Docker IMage') {
       steps {
-        bat 'sudo docker build -t cameronmcnz/cams-rps-service .'
+        sh 'sudo docker build -t cameronmcnz/cams-rps-service .'
       }
     }   
 
     stage('Software Versions') {
             steps {
-                        docker push cameronmcnz90210/cams-rps-service:first
+                        docker push shwetabhdevops/cams-rps-service:first
                     
                 }
             }
@@ -75,7 +82,7 @@ pipeline {
                     name: 'What to do???')]
                     
                     if (response=="Yes") {
-                        bat 'aws ecs update-service --cluster rps-cluster --service rps-service --force-new-deployment'
+                        sh 'aws ecs update-service --cluster rps-cluster --service rps-service --force-new-deployment'
                     }
                     if (response=="No") {
                          writeFile(file: 'deployment.txt', text: 'We did not deploy.')
